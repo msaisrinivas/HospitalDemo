@@ -163,7 +163,7 @@ class HospitalDemoApplicationTests {
 
 		PatientController patientController = new PatientController();
 		String actual = patientController.addPatient(patient,username);
-		
+
 		verify(patientsRepository,times(1)).save(patient);
 		String expected = "redirect:/patients/list?username=SaiSrinivas";
 		Assertions.assertEquals(expected,actual);
