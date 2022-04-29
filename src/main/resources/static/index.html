@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--<meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0; url=http://example.com">
+    <script type="text/javascript">
+            window.location.href = "patients/list"
+    </script>-->
+    <title>
+        Hospital Entry page
+    </title>
+</head>
+<body>
+    <i th:text="${#authentication.getPrincipal()}"></i>
+    <h2> Hello! Users want to <h1>GO</h1> to patients page <a href="patients/list">Click Here</a></h2>
+</body>
+</html>
