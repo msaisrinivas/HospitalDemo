@@ -1,6 +1,8 @@
 package com.spring.HospitalDemo.entity;
 
 
+import lombok.Data;
+
 import javax.persistence.*;
 
 @Entity

@@ -1,5 +1,6 @@
 package com.spring.HospitalDemo.controller;
 
+import com.spring.HospitalDemo.DTO.PatientsDTO;
 import com.spring.HospitalDemo.entity.Patient;
 import com.spring.HospitalDemo.entity.RoomsPatients;
 import com.spring.HospitalDemo.services.PatientService;
@@ -36,20 +37,20 @@ public class PatientController {
     @GetMapping("/addform")
     public String addform(Model model)
     {
-        Patient patient = new Patient();
+        PatientsDTO patientsDTO = new PatientsDTO();
 
-        model.addAttribute("patient",patient);
+        model.addAttribute("patient",patientsDTO);
 
         return "addpatient.html";
     }
 
     @PostMapping("/save")
-    public String addPatient(@ModelAttribute("patient") Patient patient,@RequestParam("username") String username)
+    public String addPatient(@ModelAttribute("patient") PatientsDTO patientsDTO,@RequestParam("username") String username)
     {
-        patient.setDoctorName(username);
+        patientsDTO.setDoctorName(username);
 
-        patientService.addPatient( patient);
-        System.out.println("DONe in controller");
+        Patient patient = patientsDTO.toPatient();
+
         if(patient.getStatus().equals("treated"))
         {
             RoomsPatients room = roomsService.findRoomByPatId(patient.getId());
@@ -59,6 +60,7 @@ public class PatientController {
                 roomsService.updateRoom(Optional.of(room));
             }
         }
+        patientService.addPatient(patient);
         return "redirect:/patients/list?username="+username;
     }
 
@@ -67,12 +69,14 @@ public class PatientController {
     {
         Optional<Patient> patient= patientService.findPatient(id);
 
-        RoomsPatients room = roomsService.findRoomByPatId(id);;
+        RoomsPatients room = roomsService.findRoomByPatId(id);
 
         if(room == null)
         {
             room = new RoomsPatients();
         }
+        if(patient.isEmpty())
+            patient = Optional.of(new Patient());
         model.addAttribute("patient",patient.get());
         model.addAttribute("room",room);
 
@@ -84,7 +88,9 @@ public class PatientController {
     {
         Optional<Patient> patient= patientService.findPatient(id);
 
-        model.addAttribute("patient",patient);
+        PatientsDTO patientsDTO = new PatientsDTO(patient);
+
+        model.addAttribute("patient",patientsDTO);
 
         return "addpatient.html";
     }

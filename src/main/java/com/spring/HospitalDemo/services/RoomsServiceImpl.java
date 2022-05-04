@@ -33,6 +33,7 @@ public class RoomsServiceImpl implements RoomsService{
     @Override
     @Transactional
     public void updateRoom(Optional<RoomsPatients> room) {
-        roomsRepository.save(room.get());
+        if(room.isPresent())
+            roomsRepository.save(room.get());
     }
 }

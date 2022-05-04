@@ -2,8 +2,8 @@ package com.spring.HospitalDemo;
 
 import com.spring.HospitalDemo.DAO.PatientsRepository;
 import com.spring.HospitalDemo.DAO.RoomsRepository;
+import com.spring.HospitalDemo.DTO.PatientsDTO;
 import com.spring.HospitalDemo.controller.LoginController;
-import com.spring.HospitalDemo.controller.PatientController;
 import com.spring.HospitalDemo.entity.Patient;
 import com.spring.HospitalDemo.entity.RoomsPatients;
 import com.spring.HospitalDemo.services.PatientService;
@@ -24,6 +24,8 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.fasterxml.jackson.databind.type.LogicalType.Map;
 import static org.mockito.Mockito.*;
 
 import static org.mockito.Mockito.when;
@@ -71,7 +73,7 @@ class HospitalDemoApplicationTests {
 
 	@Test
 	@WithMockUser(username = "SaiSrinivas" , authorities = {"ROLE_DOCTOR"})
-	public void DoctorhomePage() throws Exception {
+	void DoctorhomePage() throws Exception {
 		LoginController loginController = new LoginController();
 		String actual = loginController.patient();
 		String expected = "redirect:/patients/list?username=SaiSrinivas";
@@ -80,7 +82,7 @@ class HospitalDemoApplicationTests {
 
 	@Test
 	@WithMockUser(username = "Kalyan" , authorities = {"ROLE_ADMIN"})
-	public void RoomshomePage() throws Exception {
+	void RoomshomePage() throws Exception {
 		LoginController loginController = new LoginController();
 		String actual = loginController.patient();
 		String expected = "redirect:/rooms/list";
@@ -90,7 +92,7 @@ class HospitalDemoApplicationTests {
 	//Controller
 	//Rooms Controller
 	@Test
-	public void roomListMVC() throws Exception {
+	void roomListMVC() throws Exception {
 		when(roomsRepository.findAll()).thenReturn(
 				Stream.of(new RoomsPatients(1,101,1,6),
 						new RoomsPatients(2,102,1,7)).collect(Collectors.toList()));
@@ -100,7 +102,7 @@ class HospitalDemoApplicationTests {
 	}
 
 	@Test
-	public void roomAllotMVC() throws Exception {
+	void roomAllotMVC() throws Exception {
 		when(patientService.findPatientforRooms()).thenReturn(
 				Stream.of(new Patient(1,"Sai","Srinivas",22,986612281,
 										"msai@gmail.com","Cramps","SaiSrinivas","active"),
@@ -113,9 +115,8 @@ class HospitalDemoApplicationTests {
 		mockMvc.perform(get("/rooms/allot").queryParam("id","1")).andExpect(status().is(200));
 	}
 
-	//check
 	@Test
-	public void roomSelectMVC() throws Exception {
+	void roomSelectMVC() throws Exception {
 
 		int id =1;
 		RoomsPatients roomsPatients = new RoomsPatients(1,101,1,null);
@@ -126,12 +127,36 @@ class HospitalDemoApplicationTests {
 				.queryParam("id", String.valueOf(id))).andExpect(status().is(302));
 	}
 
+	@Test
+	void roomSelectMVC2() throws Exception {
+
+		int id =1;
+		RoomsPatients roomsPatients = new RoomsPatients(1,101,1,null);
+		when(roomsRepository.findById(id)).thenReturn(Optional.of(roomsPatients));
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		mockMvc.perform(get("/rooms/select").queryParam("patientId","-1")
+				.queryParam("id", String.valueOf(id))).andExpect(status().is(302));
+	}
+
+	@Test
+	void roomSelectMVC3	() throws Exception {
+
+		int id =1;
+		RoomsPatients roomsPatients = new RoomsPatients();
+		when(roomsRepository.findById(id)).thenReturn(Optional.empty());
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		mockMvc.perform(get("/rooms/select").queryParam("patientId","-1")
+				.queryParam("id", String.valueOf(id))).andExpect(status().is(302));
+	}
+
 
 
 	//Controller
 	//Patients Controller
 	@Test
-	public void patientsListMVC() throws Exception {
+	void patientsListMVC() throws Exception {
 		String doc ="SaiSrinivas";
 		when(patientsRepository.findByDoctorName(doc)).thenReturn(
 				Stream.of(new Patient(1,"Sai","Srinivas",22,986612281,
@@ -148,32 +173,60 @@ class HospitalDemoApplicationTests {
 
 	@Test
 	@WithMockUser(username = "SaiSrinivas", authorities = { "DOCTOR"})
-	public void patientsAddFormMVC() throws Exception {
+	void patientsAddFormMVC() throws Exception {
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 		mockMvc.perform(get("/patients/addform")).andExpect(status().isOk());
 	}
 
-	/*@Test
-	public void patientSaveFormMVC() throws Exception {
+	@Test
+	void patientsSaveMVC() throws Exception {
+		String username = "SaiSrinivas";
+
 		Patient patient = new Patient(6,"Sai","Srinivas",22,986612281,
 				"msai@gmail.com","Cramps","SaiSrinivas","active");
+		PatientsDTO patientsDTO = new PatientsDTO(Optional.of(patient));
 
-		String username = "SaiSrinivas";
-		patientService.addPatient(patient);
-
-		PatientController patientController = new PatientController();
-		String actual = patientController.addPatient(patient,username);
-
-		verify(patientsRepository,times(1)).save(patient);
-		String expected = "redirect:/patients/list?username=SaiSrinivas";
-		Assertions.assertEquals(expected,actual);
-	}*/
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		mockMvc.perform(post("/patients/save").flashAttr("patient",patientsDTO)
+				.queryParam("username",username)).andExpect(status().is(302));
+	}
 
 	@Test
-	public void patientsViewDetMVC() throws Exception {
+	void patientsSaveMVC1() throws Exception {
+		String username = "SaiSrinivas";
+
+		Patient patient = new Patient(6,"Sai","Srinivas",22,986612281,
+				"msai@gmail.com","Cramps","SaiSrinivas","treated");
+		PatientsDTO patientsDTO = new PatientsDTO(Optional.of(patient));
+
+		when(roomsService.findRoomByPatId(6)).thenReturn(null);
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		mockMvc.perform(post("/patients/save").flashAttr("patient",patientsDTO)
+				.queryParam("username",username)).andExpect(status().is(302));
+	}
+
+	@Test
+	void patientsSaveMVC2() throws Exception {
+		String username = "SaiSrinivas";
+
+		Patient patient = new Patient(6,"Sai","Srinivas",22,986612281,
+				"msai@gmail.com","Cramps","SaiSrinivas","treated");
+		PatientsDTO patientsDTO = new PatientsDTO(Optional.of(patient));
+
+		RoomsPatients roomsPatients = new RoomsPatients(1,101,1,6);
+		when(roomsService.findRoomByPatId(6)).thenReturn(roomsPatients);
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		mockMvc.perform(post("/patients/save").flashAttr("patient",patientsDTO)
+				.queryParam("username",username)).andExpect(status().is(302));
+	}
+
+	@Test
+	void patientsViewDetMVC() throws Exception {
 		int id =6;
 		Patient patient = new Patient(6,"Sai","Srinivas",22,986612281,
-				"msai@gmail.com","Cramps","SaiSrinivas","active");
+				"msai@gmail.com","Cramps","SaiSrinivas","treated");
 		when(patientService.findPatient(id)).thenReturn(Optional.of(patient) );
 
 		int patientId = 6;
@@ -185,8 +238,23 @@ class HospitalDemoApplicationTests {
 	}
 
 	@Test
+	void patientsViewDetMVC1() throws Exception {
+		int id =6;
+		Patient patient = new Patient(6,"Sai","Srinivas",22,986612281,
+				"msai@gmail.com","Cramps","SaiSrinivas","treated");
+		when(patientService.findPatient(id)).thenReturn(Optional.empty());
+
+		int patientId = 6;
+		RoomsPatients roomsPatients = new RoomsPatients(1,101,1,6);
+		when(roomsService.findRoomByPatId(patientId)).thenReturn( null );
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		mockMvc.perform(get("/patients/viewdet").queryParam("patientId","6")).andExpect(status().isOk());
+	}
+
+	@Test
 	@WithMockUser(username = "SaiSrinivas", authorities = { "DOCTOR"})
-	public void updateFormMVC() throws Exception {
+	void updateFormMVC() throws Exception {
 		int id =6;
 		Patient patient = new Patient(6,"Sai","Srinivas",22,986612281,
 				"msai@gmail.com","Cramps","SaiSrinivas","active");
@@ -237,6 +305,19 @@ class HospitalDemoApplicationTests {
 		roomsService.updateRoom(Optional.of(roomsPatients));
 
 		verify(roomsRepository,times(1)).save(roomsPatients);
+	}
+
+	@Test
+	void updateRoomTest2()
+	{
+		int id =1;
+		int patientId=6;
+		RoomsPatients roomsPatients = new RoomsPatients(1,101,1,6);
+		roomsPatients.setBedNumber(2);
+		when(roomsService.findRoomById(id)).thenReturn(Optional.empty());
+		roomsService.updateRoom(Optional.empty());
+
+		verify(roomsRepository,times(0)).save(roomsPatients);
 	}
 
 	//Service
@@ -435,6 +516,53 @@ class HospitalDemoApplicationTests {
 		Patient patient = new Patient(1,"Sai","Srinivas",22,924531678,
 				"Sai@gmail.com","Sai is headache","Dr. Sai","active");
 		Assertions.assertEquals(expected,patient.toString());
+	}
+
+	@Test
+	void PatientsDtoCons()
+	{
+		Patient patient = new Patient(1,"Sai","Srinivas",22,924531678,
+				"Sai@gmail.com","Sai is headache","Dr. Sai","active");
+
+		PatientsDTO patientsDTO = new PatientsDTO(Optional.of(patient));
+
+		Assertions.assertEquals(patientsDTO.getId(),patient.getId());
+	}
+
+	@Test
+	void PatientsDtoCons1()
+	{
+		PatientsDTO patientsDTO = new PatientsDTO(Optional.empty());
+		int expected = patientsDTO.getId();
+
+		Assertions.assertEquals(expected, 0);
+	}
+
+	@Test
+	void PatientsDtotoPatient()
+	{
+		Patient patient = new Patient(1,"Sai","Srinivas",22,924531678,
+				"Sai@gmail.com","Sai is headache","Dr. Sai","active");
+
+		PatientsDTO patientsDTO = new PatientsDTO();
+
+		patientsDTO.setId(1);
+		patientsDTO.setFirstName("Sai");
+		patientsDTO.setLastName("Srinivas");
+		patientsDTO.setAge(22);
+		patientsDTO.setPhoneNumber(924531678);
+		patientsDTO.setEmail("Sai@gmail.com");
+		patientsDTO.setDescription("Sai is headache");
+		patientsDTO.setDoctorName("Dr. Sai");
+		patientsDTO.setStatus("active");
+
+		Patient patient1= patientsDTO.toPatient();
+
+		String expected = patient.toString();
+
+		String actual =patient1.toString();
+
+		Assertions.assertEquals(expected,actual);
 	}
 
 }

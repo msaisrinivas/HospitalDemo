@@ -52,17 +52,18 @@ public class RoomsController {
             @RequestParam("id") int id)
     {
         Optional<RoomsPatients> room= roomsService.findRoomById(id);
-
-        if(patientId==-1)
+        if(!room.isEmpty())
         {
-            room.get().setPatientId(null);
+            if(patientId==-1)
+            {
+                room.get().setPatientId(null);
+            }
+            else
+            {
+                room.get().setPatientId(patientId);
+            }
+            roomsService.updateRoom(room);
         }
-        else
-        {
-            room.get().setPatientId(patientId);
-        }
-        roomsService.updateRoom(room);
-
         return "redirect:/rooms/list";
     }
 }
