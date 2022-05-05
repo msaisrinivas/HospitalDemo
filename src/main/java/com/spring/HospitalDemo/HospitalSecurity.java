@@ -30,6 +30,7 @@ public class HospitalSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/").hasAnyRole("DOCTOR","ADMIN")
+                .antMatchers("/signIn").permitAll()
                 .antMatchers("/patients/viewdet").hasAnyRole("ADMIN","DOCTOR")
                 .antMatchers("/patients/**").hasRole("DOCTOR")
                 .antMatchers("/rooms/**").hasRole("ADMIN")

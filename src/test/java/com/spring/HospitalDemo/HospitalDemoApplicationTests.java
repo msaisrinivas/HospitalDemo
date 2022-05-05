@@ -1,12 +1,15 @@
 package com.spring.HospitalDemo;
 
+import com.spring.HospitalDemo.DAO.EmployeeRepository;
 import com.spring.HospitalDemo.DAO.PatientsRepository;
+import com.spring.HospitalDemo.DAO.RoomRepository;
 import com.spring.HospitalDemo.DAO.RoomsRepository;
 import com.spring.HospitalDemo.DTO.PatientsDTO;
 import com.spring.HospitalDemo.controller.LoginController;
-import com.spring.HospitalDemo.entity.Patient;
-import com.spring.HospitalDemo.entity.RoomsPatients;
+import com.spring.HospitalDemo.entity.*;
+import com.spring.HospitalDemo.services.EmployeeService;
 import com.spring.HospitalDemo.services.PatientService;
+import com.spring.HospitalDemo.services.RoomService;
 import com.spring.HospitalDemo.services.RoomsService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,6 +21,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.ui.Model;
 import org.springframework.web.context.WebApplicationContext;
 
 
@@ -47,6 +51,18 @@ class HospitalDemoApplicationTests {
 
 	@MockBean
 	private PatientsRepository patientsRepository;
+
+	@Autowired
+	private RoomService roomService;
+
+    @MockBean
+    private RoomRepository roomRepository;
+
+	@Autowired
+	private EmployeeService employeeService;
+
+	@MockBean
+	private EmployeeRepository employeeRepository;
 
 	@Autowired
 	private WebApplicationContext wac;
@@ -89,19 +105,42 @@ class HospitalDemoApplicationTests {
 		Assertions.assertEquals(expected,actual);
 	}
 
+	@Test
+	@WithMockUser(username = "Kalyan" , authorities = {"ROLE_ADMIN"})
+	void signInPage() throws Exception {
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		mockMvc.perform(get("/signIn")).andExpect(status().is(200));
+	}
+
+	@Test
+	@WithMockUser(username = "Kalyan" , authorities = {"ROLE_ADMIN"})
+	void addEmpPage() throws Exception {
+		Employee employee = new Employee("SaiSrinivas","sai123",1);
+		when(employeeRepository.getByUsername("SaiSrinivas")).thenReturn(employee);
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		mockMvc.perform(get("/addEmp")).andExpect(status().is(302));
+	}
+
 	//Controller
 	//Rooms Controller
 	@Test
+    @WithMockUser(username = "Kalyan" , authorities = {"ROLE_ADMIN"})
 	void roomListMVC() throws Exception {
 		when(roomsRepository.findAll()).thenReturn(
 				Stream.of(new RoomsPatients(1,101,1,6),
 						new RoomsPatients(2,102,1,7)).collect(Collectors.toList()));
+
+        when(roomRepository.findAll()).thenReturn(
+                Stream.of(new Rooms(101,"single",1),
+                        new Rooms(102,"single",1)).collect(Collectors.toList()));
 
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 		mockMvc.perform(get("/rooms/list")).andExpect(status().is(200));
 	}
 
 	@Test
+    @WithMockUser(username = "Kalyan" , authorities = {"ROLE_ADMIN"})
 	void roomAllotMVC() throws Exception {
 		when(patientService.findPatientforRooms()).thenReturn(
 				Stream.of(new Patient(1,"Sai","Srinivas",22,986612281,
@@ -116,6 +155,7 @@ class HospitalDemoApplicationTests {
 	}
 
 	@Test
+    @WithMockUser(username = "Kalyan" , authorities = {"ROLE_ADMIN"})
 	void roomSelectMVC() throws Exception {
 
 		int id =1;
@@ -128,6 +168,7 @@ class HospitalDemoApplicationTests {
 	}
 
 	@Test
+    @WithMockUser(username = "Kalyan" , authorities = {"ROLE_ADMIN"})
 	void roomSelectMVC2() throws Exception {
 
 		int id =1;
@@ -140,6 +181,7 @@ class HospitalDemoApplicationTests {
 	}
 
 	@Test
+    @WithMockUser(username = "Kalyan" , authorities = {"ROLE_ADMIN"})
 	void roomSelectMVC3	() throws Exception {
 
 		int id =1;
@@ -151,11 +193,35 @@ class HospitalDemoApplicationTests {
 				.queryParam("id", String.valueOf(id))).andExpect(status().is(302));
 	}
 
+	@Test
+	@WithMockUser(username = "Kalyan" , authorities = {"ROLE_ADMIN"})
+	void roomDoctorListMVC() throws Exception {
+		when(employeeRepository.findAllForAdmin()).thenReturn(
+				Stream.of(new Employee("new","new",1),
+						new Employee("new1","new1",1)).collect(Collectors.toList()));
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		mockMvc.perform(get("/rooms/doctor")).andExpect(status().is(200));
+	}
+
+	@Test
+	@WithMockUser(username = "Kalyan" , authorities = {"ROLE_ADMIN"})
+	void roomDocDelete() throws Exception {
+//
+//		int id =1;
+//		RoomsPatients roomsPatients = new RoomsPatients();
+//		when(roomsRepository.findById(id)).thenReturn(Optional.empty());
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		mockMvc.perform(get("/rooms/docDelete").queryParam("username","SaiSrinivas"))
+				.andExpect(status().is(302));
+	}
 
 
 	//Controller
 	//Patients Controller
 	@Test
+    @WithMockUser(username = "SaiSrinivas" , authorities = {"ROLE_DOCTOR"})
 	void patientsListMVC() throws Exception {
 		String doc ="SaiSrinivas";
 		when(patientsRepository.findByDoctorName(doc)).thenReturn(
@@ -179,6 +245,7 @@ class HospitalDemoApplicationTests {
 	}
 
 	@Test
+    @WithMockUser(username = "SaiSrinivas" , authorities = {"ROLE_DOCTOR"})
 	void patientsSaveMVC() throws Exception {
 		String username = "SaiSrinivas";
 
@@ -192,6 +259,7 @@ class HospitalDemoApplicationTests {
 	}
 
 	@Test
+    @WithMockUser(username = "SaiSrinivas" , authorities = {"ROLE_DOCTOR"})
 	void patientsSaveMVC1() throws Exception {
 		String username = "SaiSrinivas";
 
@@ -207,6 +275,7 @@ class HospitalDemoApplicationTests {
 	}
 
 	@Test
+    @WithMockUser(username = "SaiSrinivas" , authorities = {"ROLE_DOCTOR"})
 	void patientsSaveMVC2() throws Exception {
 		String username = "SaiSrinivas";
 
@@ -223,6 +292,7 @@ class HospitalDemoApplicationTests {
 	}
 
 	@Test
+    @WithMockUser(username = "SaiSrinivas" , authorities = {"ROLE_DOCTOR"})
 	void patientsViewDetMVC() throws Exception {
 		int id =6;
 		Patient patient = new Patient(6,"Sai","Srinivas",22,986612281,
@@ -238,6 +308,7 @@ class HospitalDemoApplicationTests {
 	}
 
 	@Test
+    @WithMockUser(username = "SaiSrinivas" , authorities = {"ROLE_DOCTOR"})
 	void patientsViewDetMVC1() throws Exception {
 		int id =6;
 		Patient patient = new Patient(6,"Sai","Srinivas",22,986612281,
@@ -384,6 +455,18 @@ class HospitalDemoApplicationTests {
 		Assertions.assertEquals(2,patientService.findPatientforRooms().size());
 	}
 
+	//Service
+	//Room Service
+	@Test
+	void findAll()
+	{
+		when(roomRepository.findAll()).thenReturn(
+				Stream.of(new Rooms(101,"single",1),
+						new Rooms(102,"single",1)).collect(Collectors.toList()));
+
+		Assertions.assertEquals(2,roomService.findAll().size());
+	}
+
 	//Entity
 	//RoomsPatients
 	@Test
@@ -518,6 +601,110 @@ class HospitalDemoApplicationTests {
 		Assertions.assertEquals(expected,patient.toString());
 	}
 
+	//Entity
+	//Authorities Entity
+	@Test
+	void setUserName() {
+		Authorities authorities = new Authorities();
+		String expected = "new";
+		authorities.setUserName(expected);
+		Assertions.assertEquals(expected,authorities.getUserName());
+	}
+
+	@Test
+	void setAuthority() {
+		Authorities authorities = new Authorities();
+		String expected = "ROLE_DOCTOR";
+		authorities.setAuthority(expected);
+		Assertions.assertEquals(expected,authorities.getAuthority());
+	}
+
+	@Test
+	void testToStringAuthorities() {
+		String expected = "Authorities{" +
+				"userName='new"+ '\'' +
+				", Authority='ROLE_DOCTOR" + '\'' +
+				'}';
+		Authorities authorities = new Authorities("new","ROLE_DOCTOR");
+		Assertions.assertEquals(expected,authorities.toString());
+	}
+
+	//Entity
+	//Employee Entity
+	@Test
+	void setUsername() {
+		Employee employee = new Employee();
+		String expected = "new";
+		employee.setUsername(expected);
+		Assertions.assertEquals(expected,employee.getUsername());
+	}
+
+	@Test
+	void setPassword() {
+		Employee employee = new Employee();
+		String expected = "new";
+		employee.setPassword(expected);
+		Assertions.assertEquals(expected,employee.getPassword());
+	}
+
+	@Test
+	void setEnabled() {
+		Employee employee = new Employee();
+		int expected = 1;
+		employee.setEnabled(expected);
+		Assertions.assertEquals(expected,employee.getEnabled());
+	}
+
+	@Test
+	void testToStringEmployee() {
+		String expected = "Employee{" +
+				"username='new" + '\'' +
+				", password='new" +'\'' +
+				", enabled=1" +
+				'}';
+		Employee employee = new Employee("new","new",1);
+		Assertions.assertEquals(expected,employee.toString());
+	}
+
+	//Entity
+	//Rooms Entity
+	@Test
+	void setRoomIdRooms() {
+		Rooms rooms = new Rooms();
+		int expected = 103;
+		rooms.setRoomId(expected);
+		Assertions.assertEquals(expected,rooms.getRoomId());
+	}
+
+	@Test
+	void setRoomType() {
+		Rooms rooms = new Rooms();
+		String expected = "single";
+		rooms.setRoomType(expected);
+		Assertions.assertEquals(expected,rooms.getRoomType());
+	}
+
+	@Test
+	void setMaxBeds() {
+		Rooms rooms = new Rooms();
+		int expected = 1;
+		rooms.setMaxBeds(expected);
+		Assertions.assertEquals(expected,rooms.getMaxBeds());
+	}
+
+	@Test
+	void testToStringRooms() {
+		String expected = "Rooms{" +
+				"roomId=101" +
+				", roomType='single" + '\'' +
+				", maxBeds=1" +
+				'}';
+		Rooms rooms = new Rooms(101,"single",1);
+		Assertions.assertEquals(expected,rooms.toString());
+	}
+
+	//DTO
+	//Patient DTO
 	@Test
 	void PatientsDtoCons()
 	{

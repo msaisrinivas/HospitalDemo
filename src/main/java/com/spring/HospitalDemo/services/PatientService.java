@@ -15,4 +15,6 @@ public interface PatientService {
     public List<Patient> findPatientByDoc(String doctorName);
 
     List<Patient> findPatientforRooms();
+
+    void deleteByDoc(String username);
 }

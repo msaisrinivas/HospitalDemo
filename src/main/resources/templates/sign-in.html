@@ -37,22 +37,13 @@
   <body class="text-center">
     
 <main class="form-signin">
-  <form th:action="@{/authTheUser}" method="POST">
+  <form th:action="@{/addEmp}" method="POST">
     <img class="mb-4" src="Hlogo.png" alt="" width="72" height="57">
-    <h1 class="h3 mb-3 fw-normal">Please Log In</h1>
+    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
     <!-- Check for login error -->
     <div th:if="${param.error}" class="alert alert-danger col-xs-offset-1 col-xs-10">
-      Invalid username and password.
-    </div>
-
-    <!-- Check for logout -->
-    <div th:if="${param.logout}"class="alert alert-success col-xs-offset-1 col-xs-10">
-      You have been logged out.
-    </div>
-
-    <div th:if="${param.signIn}"class="alert alert-success col-xs-offset-1 col-xs-10">
-      You have Successfully Signed In. Please Log In to Continue.
+      Username is already Taken. <br>Please Try with New One.
     </div>
 
     <div class="form-floating">
@@ -69,8 +60,9 @@
         Estd. In 2000
       </label>
     </div>
-    <button class="w-100 btn btn-lg btn-primary" type="submit">Log In</button><br>
-    <p>New Doctor <a th:href="@{/signIn}">Sign In</a> Here</p>
+    <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+    <br>
+    <p>Wanted To LogIn,<a th:href="@{/}">Log In</a> Here</p>
     <p class="mt-5 mb-3 text-muted">&copy; 2000–2021</p>
   </form>
 </main>

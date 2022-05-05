@@ -2,6 +2,7 @@ package com.spring.HospitalDemo.DAO;
 
 import com.spring.HospitalDemo.entity.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface PatientsRepository extends JpaRepository<Patient,Integer> {
 
     @Query(PATIENTS_FOR_ROOMS)
     List<Patient> findPatientForRooms();
+
+    int deleteAllByDoctorName(String username);
 }

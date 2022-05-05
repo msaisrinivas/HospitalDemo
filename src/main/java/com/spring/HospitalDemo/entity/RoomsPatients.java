@@ -20,6 +20,7 @@ public class RoomsPatients {
     @Column(name = "patient_id")
     private Integer patientId;
 
+
     public RoomsPatients() {
     }
 

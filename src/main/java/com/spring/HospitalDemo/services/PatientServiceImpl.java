@@ -5,6 +5,7 @@ import com.spring.HospitalDemo.entity.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,5 +39,11 @@ public class PatientServiceImpl implements com.spring.HospitalDemo.services.Pati
     @Override
     public List<Patient> findPatientforRooms() {
         return patientsRepository.findPatientForRooms();
+    }
+
+    @Transactional
+    @Override
+    public void deleteByDoc(String username) {
+        int d_rec = patientsRepository.deleteAllByDoctorName(username);
     }
 }

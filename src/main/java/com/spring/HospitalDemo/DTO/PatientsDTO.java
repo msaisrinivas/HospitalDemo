@@ -3,17 +3,33 @@ package com.spring.HospitalDemo.DTO;
 import com.spring.HospitalDemo.entity.Patient;
 import lombok.Data;
 
+import javax.validation.constraints.*;
 import java.util.Optional;
 
 
 @Data
 public class PatientsDTO {
     private int id;
+
+    @NotBlank(message = "First Name is Required")
     private String firstName;
+
+    @NotBlank(message = "Last Name is Required")
     private String lastName;
+
+    @NotNull(message = "Age is Required")
+    @Min(1)
+    @Max(120)
     private int age;
+
+    @NotNull(message = "Phone number is Required")
     private int phoneNumber;
+
+    @Email
+    @NotBlank(message = "Email is Required")
     private String email;
+
+    @NotBlank(message = "Description is Required")
     private String description;
     private String doctorName;
     private String status;

@@ -1,9 +1,8 @@
 package com.spring.HospitalDemo.controller;
 
-import com.spring.HospitalDemo.entity.Patient;
-import com.spring.HospitalDemo.entity.RoomsPatients;
-import com.spring.HospitalDemo.services.PatientService;
-import com.spring.HospitalDemo.services.RoomsService;
+import com.spring.HospitalDemo.DTO.EmployeeDTO;
+import com.spring.HospitalDemo.entity.*;
+import com.spring.HospitalDemo.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,14 +21,26 @@ public class RoomsController {
     private RoomsService roomsService;
 
     @Autowired
+    private RoomService roomService;
+
+    @Autowired
     private PatientService patientService;
+
+    @Autowired
+    private EmployeeService employeeService;
+
+    @Autowired
+    private AuthoritiesService authoritiesService;
 
     @GetMapping("/list")
     public String findAllRooms(Model model)
     {
         List<RoomsPatients> rooms= roomsService.findAllRoooms();
 
+        List<Rooms> roomsList = roomService.findAll();
+
         model.addAttribute("rooms",rooms);
+        model.addAttribute("roomsList",roomsList);
 
         return "rooms.html";
     }
@@ -65,5 +76,24 @@ public class RoomsController {
             roomsService.updateRoom(room);
         }
         return "redirect:/rooms/list";
+    }
+
+    @GetMapping("/doctor")
+    public String getDoctors(Model model)
+    {
+        List<Employee> employees = employeeService.findAllForAdmin();
+
+        model.addAttribute("doctors",employees);
+
+        return "doctors.html";
+    }
+
+    @GetMapping("/docDelete")
+    public String docDelete(@RequestParam("username") String username)
+    {
+        patientService.deleteByDoc(username);
+        authoritiesService.deleteByUsername(username);
+        employeeService.delete(employeeService.findByUsername(username));
+        return "redirect:/rooms/doctor";
     }
 }

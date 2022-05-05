@@ -8,8 +8,13 @@ import com.spring.HospitalDemo.services.RoomsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,24 +49,24 @@ public class PatientController {
         return "addpatient.html";
     }
 
+    
     @PostMapping("/save")
-    public String addPatient(@ModelAttribute("patient") PatientsDTO patientsDTO,@RequestParam("username") String username)
-    {
+    public String addPatient(@Valid @ModelAttribute("patient") PatientsDTO patientsDTO,
+                             @RequestParam("username") String username)
+            throws MethodArgumentNotValidException, ConstraintViolationException, BindException {
         patientsDTO.setDoctorName(username);
 
         Patient patient = patientsDTO.toPatient();
 
-        if(patient.getStatus().equals("treated"))
-        {
+        if (patient.getStatus().equals("treated")) {
             RoomsPatients room = roomsService.findRoomByPatId(patient.getId());
-            if(room != null)
-            {
+            if (room != null) {
                 room.setPatientId(null);
                 roomsService.updateRoom(Optional.of(room));
             }
         }
         patientService.addPatient(patient);
-        return "redirect:/patients/list?username="+username;
+        return "redirect:/patients/list?username=" + username;
     }
 
     @GetMapping("/viewdet")

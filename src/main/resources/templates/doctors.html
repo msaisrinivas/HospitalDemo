@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:form="http://www.w3.org/1999/xhtml">
 <head>
     <title>
-        Admin's Home Page
+        Admin's Doctors Page
     </title>
 
     <link rel="stylesheet"
@@ -74,28 +74,17 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th scope="col">Id</th>
-                    <th scope="col">Room Id</th>
-                    <th scope="col">Bed Number</th>
-                    <th scope="col">Room Type</th>
-                    <th scope="col">Allotment</th>
+                    <th scope="col">User Name</th>
+                    <th scope="col">Enabled</th>
+                    <th scope="col">Delete</th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="room : ${rooms}">
-                    <td th:text ="${room.id}"></td>
-                    <td th:text ="${room.roomId}"></td>
-                    <td th:text ="${room.bedNumber}"></td>
-                    <span th:each="roomL : ${roomsList}">
-                        <td th:if="${roomL.roomId == room.roomId}" th:text="${roomL.roomType}"></td>
-                    </span>
+                <tr th:each="doctor : ${doctors}">
+                    <td th:text ="${doctor.username}"></td>
+                    <td th:text ="${doctor.enabled}"></td>
                     <td>
-                        <span th:if="${room.patientId == null}">
-                            <a class="btn btn-primary" th:href="@{/rooms/allot(id=${room.id})}">Allot</a>
-                        </span>
-                        <span th:if="${room.patientId != null}">
-                            <a class="btn btn-secondary" th:href="@{/patients/viewdet(patientId=${room.patientId})}">Patient<i th:text="${room.patientId}"/></a>
-                        </span>
+                        <a class="btn btn-primary" th:href="@{/rooms/docDelete(username=${doctor.username})}">Delete</a>
                     </td>
                 </tr>
             </tbody>

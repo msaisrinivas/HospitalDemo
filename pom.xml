@@ -79,6 +79,12 @@
 			<artifactId>thymeleaf-extras-springsecurity5</artifactId>
 		</dependency>
 
+		<!--For hibernate validations-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
 		<!-- Sonar scanner's start -->
 		<dependency>
 			<groupId>org.jacoco</groupId>

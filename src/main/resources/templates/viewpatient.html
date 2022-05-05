@@ -24,6 +24,14 @@
             font-weight: bold;
             color: #bb8b1b;
         }
+        #header span{
+            font-size:20px;
+            color:black;
+            float:right;
+            position:relative;
+            top:30px;
+            right:10px;
+        }
     </style>
 </head>
 <body>
@@ -31,6 +39,8 @@
     <div id="wrapper">
         <div id="header">
             <img class="mb-4" src="/Hlogo.png" alt="" width="72" height="57">RH - Random Hospital
+            <span sec:authorize="hasRole('ROLE_DOCTOR')" th:text="'Welcome Doctor, '+${#authentication.name}"></span>
+            <span sec:authorize="hasRole('ROLE_ADMIN')" th:text="'Welcome Admin, '+${#authentication.name}"></span>
         </div>
     </div>
     <div id="container">
