@@ -1,6 +1,10 @@
 version = 1
 
-test_patterns = ["**/*Test.java"]
+test_patterns = [
+  "[[analyzers]]",
+  "name = \"test-coverage\"",
+  "enabled = true"
+]
 
 [[analyzers]]
 name = "java"
