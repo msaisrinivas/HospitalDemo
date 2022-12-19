@@ -2,29 +2,26 @@ package com.spring.HospitalDemo.services;
 
 import com.spring.HospitalDemo.DAO.AuthoritiesRepository;
 import com.spring.HospitalDemo.entity.Authorities;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-
 @Service
-public class AuthoritiesServiceImpl implements AuthoritiesService{
+public class AuthoritiesServiceImpl implements AuthoritiesService {
 
-    @Autowired
-    private AuthoritiesRepository authoritiesRepository;
+  @Autowired private AuthoritiesRepository authoritiesRepository;
 
-    @Override
-    public void save(String username) {
+  @Override
+  public void save(String username) {
 
-        Authorities authorities = new Authorities(username, "ROLE_DOCTOR");
+    Authorities authorities = new Authorities(username, "ROLE_DOCTOR");
 
-        authoritiesRepository.save(authorities);
+    authoritiesRepository.save(authorities);
+  }
 
-    }
-
-    @Transactional
-    @Override
-    public void deleteByUsername(String username) {
-        int d_rec= authoritiesRepository.deleteByUserName(username);
-    }
+  @Transactional
+  @Override
+  public void deleteByUsername(String username) {
+    int d_rec = authoritiesRepository.deleteByUserName(username);
+  }
 }
