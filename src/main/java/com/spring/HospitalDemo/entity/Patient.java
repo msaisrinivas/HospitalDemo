@@ -7,145 +7,165 @@ import javax.validation.constraints.*;
 @Table(name = "patient")
 public class Patient {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private int id;
 
-//    @NotBlank()
-    @Column(name = "first_name")
-    private String firstName;
+  //    @NotBlank()
+  @Column(name = "first_name")
+  private String firstName;
 
-//    @NotBlank(message = "Last Name is Required")
-    @Column(name = "last_name")
-    private String lastName;
+  //    @NotBlank(message = "Last Name is Required")
+  @Column(name = "last_name")
+  private String lastName;
 
-//    @NotNull(message = "Age is Required")
-//    @Min(1)
-//    @Max(120)
-    @Column(name = "age")
-    private int age;
+  //    @NotNull(message = "Age is Required")
+  //    @Min(1)
+  //    @Max(120)
+  @Column(name = "age")
+  private int age;
 
+  // @NotNull(message = "Phone number is Required")
+  @Column(name = "phone_number")
+  private int phoneNumber;
 
-    //@NotNull(message = "Phone number is Required")
-    @Column(name = "phone_number")
-    private int phoneNumber;
+  // @NotBlank(message = "Email is Required")
+  @Column(name = "email")
+  private String email;
 
+  // @NotBlank(message = "Description is Required")
+  @Column(name = "Description")
+  private String description;
 
-    //@NotBlank(message = "Email is Required")
-    @Column(name = "email")
-    private String email;
+  @Column(name = "doctor_name")
+  private String doctorName;
 
+  @Column(name = "status")
+  private String status;
 
-    //@NotBlank(message = "Description is Required")
-    @Column(name = "Description")
-    private String description;
+  public Patient() {}
 
-    @Column(name = "doctor_name")
-    private String doctorName;
+  public Patient(
+      int id,
+      String firstName,
+      String lastName,
+      int age,
+      int phoneNumber,
+      String email,
+      String description,
+      String doctorName,
+      String status) {
+    this.id = id;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.age = age;
+    this.phoneNumber = phoneNumber;
+    this.email = email;
+    this.description = description;
+    this.doctorName = doctorName;
+    this.status = status;
+  }
 
-    @Column(name = "status")
-    private String status;
+  public int getId() {
+    return id;
+  }
 
-    public Patient() {
-    }
+  public void setId(int id) {
+    this.id = id;
+  }
 
-    public Patient(int id, String firstName, String lastName, int age, int phoneNumber, String email, String description, String doctorName, String status) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.age = age;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
-        this.description = description;
-        this.doctorName = doctorName;
-        this.status = status;
-    }
+  public String getFirstName() {
+    return firstName;
+  }
 
-    public int getId() {
-        return id;
-    }
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+  public String getLastName() {
+    return lastName;
+  }
 
-    public String getFirstName() {
-        return firstName;
-    }
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+  public String getEmail() {
+    return email;
+  }
 
-    public String getLastName() {
-        return lastName;
-    }
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public String getEmail() {
-        return email;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+  public String getDoctorName() {
+    return doctorName;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public void setDoctorName(String doctorName) {
+    this.doctorName = doctorName;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public int getAge() {
+    return age;
+  }
 
-    public String getDoctorName() {
-        return doctorName;
-    }
+  public void setAge(int age) {
+    this.age = age;
+  }
 
-    public void setDoctorName(String doctorName) {
-        this.doctorName = doctorName;
-    }
+  public int getPhoneNumber() {
+    return phoneNumber;
+  }
 
-    public int getAge() {
-        return age;
-    }
+  public void setPhoneNumber(int phoneNumber) {
+    this.phoneNumber = phoneNumber;
+  }
 
-    public void setAge(int age) {
-        this.age = age;
-    }
+  public String getStatus() {
+    return status;
+  }
 
-    public int getPhoneNumber() {
-        return phoneNumber;
-    }
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
-    public void setPhoneNumber(int phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        return "Patient{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", age=" + age +
-                ", phoneNumber=" + phoneNumber +
-                ", email='" + email + '\'' +
-                ", description='" + description + '\'' +
-                ", doctor_name='" + doctorName + '\'' +
-                ", status='" + status + '\'' +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "Patient{"
+        + "id="
+        + id
+        + ", firstName='"
+        + firstName
+        + '\''
+        + ", lastName='"
+        + lastName
+        + '\''
+        + ", age="
+        + age
+        + ", phoneNumber="
+        + phoneNumber
+        + ", email='"
+        + email
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + ", doctor_name='"
+        + doctorName
+        + '\''
+        + ", status='"
+        + status
+        + '\''
+        + '}';
+  }
 }
